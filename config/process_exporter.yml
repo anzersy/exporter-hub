@@ -1,0 +1,9 @@
+process_names:
+  - comm: 
+    - code
+    - chrome
+  - name: sshd
+    cmdline:
+    - -D
+    exe:
+    - /usr/sbin/sshd
