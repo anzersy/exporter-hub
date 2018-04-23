@@ -36,6 +36,7 @@ func oidToList(oid string) []int {
 	return result
 }
 
+// ScrapeTarget do the real scrape job
 func ScrapeTarget(target string, config *config.Module) ([]gosnmp.SnmpPDU, error) {
 	// Set the options.
 	snmp := gosnmp.GoSNMP{}
@@ -77,17 +78,16 @@ func ScrapeTarget(target string, config *config.Module) ([]gosnmp.SnmpPDU, error
 		}
 		if err != nil {
 			return nil, fmt.Errorf("Error walking target %s: %s", snmp.Target, err)
-		} else {
-			log.Debugf("Walk of target %q subtree %q completed in %s", snmp.Target, subtree, time.Since(walkStart))
 		}
+		log.Debugf("Walk of target %q subtree %q completed in %s", snmp.Target, subtree, time.Since(walkStart))
 		result = append(result, pdus...)
 	}
 	return result, nil
 }
 
+// MetricNode define metrics
 type MetricNode struct {
-	metric *config.Metric
-
+	metric   *config.Metric
 	children map[int]*MetricNode
 }
 
@@ -338,9 +338,9 @@ func indexOidsAsString(indexOids []int, typ string, fixedSize int) (string, []in
 		}
 		if len(parts) == 0 {
 			return "", subOid, indexOids
-		} else {
-			return fmt.Sprintf("0x%X", string(parts)), subOid, indexOids
 		}
+		return fmt.Sprintf("0x%X", string(parts)), subOid, indexOids
+
 	case "DisplayString":
 		var subOid []int
 		length := fixedSize

@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 // Copy make a deep copy from src into dst.
@@ -17,6 +18,7 @@ func Copy(dst interface{}, src interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Unable to marshal src: %s", err)
 	}
+	log.Printf("%v", bytes)
 	err = json.Unmarshal(bytes, dst)
 	if err != nil {
 		return fmt.Errorf("Unable to unmarshal into dst: %s", err)
