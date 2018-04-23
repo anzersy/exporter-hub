@@ -62,7 +62,7 @@ func (s *SNMPExporter) snmpExporterHTTPHandler(w http.ResponseWriter, r *http.Re
 	module, ok := (*(s.C))[moduleName]
 	s.RUnlock()
 	if !ok {
-		http.Error(w, fmt.Sprintf("Unkown module '%s'", moduleName), 400)
+		http.Error(w, fmt.Sprintf("Unknown module '%s'", moduleName), 400)
 		snmpRequestErrors.Inc()
 		return
 	}

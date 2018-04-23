@@ -25,7 +25,7 @@ func (exporter *Exporter) readConfigFile(path string) error {
 	if rh, ok := RegistedHandler[exporter.Name]; ok {
 		rh.ConfigReader(exporter)
 	} else {
-		return fmt.Errorf("[%s] Exporter  no registed handler for read config", exporter.Name)
+		return fmt.Errorf("[%s] Exporter no registered handler for read config", exporter.Name)
 	}
 	return nil
 }
@@ -50,7 +50,7 @@ func registHandler(exporterHandler ExporterHander) {
 func Start(handlerName string, exporter *Exporter, m *mux.Router) error {
 	handler, ok := RegistedHandler[handlerName]
 	if !ok {
-		return fmt.Errorf("[%s] No registed handler", handlerName)
+		return fmt.Errorf("[%s] No registered handler", handlerName)
 	}
 	err := handler.Handler(exporter, m)
 	if err != nil {
