@@ -15,7 +15,7 @@ dependencies:
     - make promu
     - docker info
   override:
-    - promu build
+    - promu crossbuild -v
     - ln -s .build/linux-amd64/exporter-hub exporter-hub
     - |
       if [ -n "$CIRCLE_TAG" ]; then
