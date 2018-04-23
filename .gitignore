@@ -20,7 +20,15 @@ _cgo_export.*
 _testmain.go
 
 *.exe
-*.test
-*.prof
-*~
+dependencies-stamp
+/exporter-hub
+/exporter-hub-0.1.linux-amd64.tar.gz
+/.build
+/.deps
+/.release
+/.tarballs
 
+# Intellij
+
+/.idea
+*.iml
