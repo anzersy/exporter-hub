@@ -49,13 +49,6 @@ jobs:
           fi
     - run: docker images
     - run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
-    - run:
-        command: |
-          if [ -n "$CIRCLE_TAG" ]; then
-            make test-docker DOCKER_IMAGE_TAG=$CIRCLE_TAG
-          else
-            make test-docker
-          fi
 
   docker_hub_master:
     docker:
