@@ -14,7 +14,7 @@ MACH                    ?= $(shell uname -m)
 DOCKERFILE              ?= Dockerfile
 STATICCHECK_IGNORE =
 
-all: style vet staticcheck test build tarball
+all: format vet staticcheck build test
 
 format: 
 		@echo ">> formatting code"
@@ -44,12 +44,14 @@ tarball: $(PROMU)
 	@echo ">> building release tarball"
 	@$(PROMU) tarball --prefix $(PREFIX) $(BIN_DIR)
 
+docker:
+	@echo ">> building docker image"
+	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
+
+$(FIRST_GOPATH)/bin/promu promu:
+	@GOOS= GOARCH= $(GO) get -u github.com/prometheus/promu
+
 $(FIRST_GOPATH)/bin/staticcheck:
 	@GOOS= GOARCH= $(GO) get -u honnef.co/go/tools/cmd/staticcheck
 
-$(FIRST_GOPATH)/bin/promu promu:
-	@GOOS=$(go env GOHOSTOS) \
-	GOARCH=$(go env GOHOSTARCH) \
-	$(GO) install github.com/prometheus/promu
-
-.PHONY: all build format promu style tarball test vet staticcheck $(FIRST_GOPATH)/bin/promu $(FIRST_GOPATH)/bin/staticcheck
+.PHONY: all style format build test vet tarball docker promu staticcheck $(FIRST_GOPATH)/bin/promu $(FIRST_GOPATH)/bin/staticcheck
