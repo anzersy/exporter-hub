@@ -120,9 +120,5 @@ func main() {
 		pid = syscall.Getpid()
 		log.Infof("Application pid is %d", pid)
 	}
-
-	err = server.ListenAndServe()
-	if err != nil {
-		log.Fatalf("Start http server error: %s", err)
-	}
+	log.Fatal(server.ListenAndServe())
 }
