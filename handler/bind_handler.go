@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
-	_ "net/http/pprof"
 	"strconv"
 	"strings"
 	"time"
@@ -25,9 +24,9 @@ import (
 )
 
 const (
-	namespace_bind = "bind"
-	exporter       = "bind_exporter"
-	resolver       = "resolver"
+	namespaceBind = "bind"
+	exporter      = "bind_exporter"
+	resolver      = "resolver"
 )
 
 var (
@@ -35,88 +34,88 @@ var (
 	groups       = statisticGroups{bind.ServerStats, bind.ViewStats}
 
 	up = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "up"),
+		prometheus.BuildFQName(namespaceBind, "", "up"),
 		"Was the Bind instance query successful?",
 		nil, nil,
 	)
 	bootTime = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "boot_time_seconds"),
+		prometheus.BuildFQName(namespaceBind, "", "boot_time_seconds"),
 		"Start time of the BIND process since unix epoch in seconds.",
 		nil, nil,
 	)
 	configTime = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "config_time_seconds"),
+		prometheus.BuildFQName(namespaceBind, "", "config_time_seconds"),
 		"Time of the last reconfiguration since unix epoch in seconds.",
 		nil, nil,
 	)
 	incomingQueries = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "incoming_queries_total"),
+		prometheus.BuildFQName(namespaceBind, "", "incoming_queries_total"),
 		"Number of incoming DNS queries.",
 		[]string{"type"}, nil,
 	)
 	incomingRequests = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "incoming_requests_total"),
+		prometheus.BuildFQName(namespaceBind, "", "incoming_requests_total"),
 		"Number of incoming DNS requests.",
 		[]string{"opcode"}, nil,
 	)
 	resolverCache = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "cache_rrsets"),
+		prometheus.BuildFQName(namespaceBind, resolver, "cache_rrsets"),
 		"Number of RRSets in Cache database.",
 		[]string{"view", "type"}, nil,
 	)
 	resolverQueries = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "queries_total"),
+		prometheus.BuildFQName(namespaceBind, resolver, "queries_total"),
 		"Number of outgoing DNS queries.",
 		[]string{"view", "type"}, nil,
 	)
 	resolverQueryDuration = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "query_duration_seconds"),
+		prometheus.BuildFQName(namespaceBind, resolver, "query_duration_seconds"),
 		"Resolver query round-trip time in seconds.",
 		[]string{"view"}, nil,
 	)
 	resolverQueryErrors = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "query_errors_total"),
+		prometheus.BuildFQName(namespaceBind, resolver, "query_errors_total"),
 		"Number of resolver queries failed.",
 		[]string{"view", "error"}, nil,
 	)
 	resolverResponseErrors = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "response_errors_total"),
+		prometheus.BuildFQName(namespaceBind, resolver, "response_errors_total"),
 		"Number of resolver response errors received.",
 		[]string{"view", "error"}, nil,
 	)
 	resolverDNSSECSuccess = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, resolver, "dnssec_validation_success_total"),
+		prometheus.BuildFQName(namespaceBind, resolver, "dnssec_validation_success_total"),
 		"Number of DNSSEC validation attempts succeeded.",
 		[]string{"view", "result"}, nil,
 	)
 	resolverMetricStats = map[string]*prometheus.Desc{
 		"Lame": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "response_lame_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "response_lame_total"),
 			"Number of lame delegation responses received.",
 			[]string{"view"}, nil,
 		),
 		"EDNS0Fail": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "query_edns0_errors_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "query_edns0_errors_total"),
 			"Number of EDNS(0) query errors.",
 			[]string{"view"}, nil,
 		),
 		"Mismatch": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "response_mismatch_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "response_mismatch_total"),
 			"Number of mismatch responses received.",
 			[]string{"view"}, nil,
 		),
 		"Retry": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "query_retries_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "query_retries_total"),
 			"Number of resolver query retries.",
 			[]string{"view"}, nil,
 		),
 		"Truncated": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "response_truncated_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "response_truncated_total"),
 			"Number of truncated responses received.",
 			[]string{"view"}, nil,
 		),
 		"ValFail": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, resolver, "dnssec_validation_errors_total"),
+			prometheus.BuildFQName(namespaceBind, resolver, "dnssec_validation_errors_total"),
 			"Number of DNSSEC validation attempt errors.",
 			[]string{"view"}, nil,
 		),
@@ -133,12 +132,12 @@ var (
 		"ValNegOk":      resolverDNSSECSuccess,
 	}
 	serverQueryErrors = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "query_errors_total"),
+		prometheus.BuildFQName(namespaceBind, "", "query_errors_total"),
 		"Number of query failures.",
 		[]string{"error"}, nil,
 	)
 	serverResponses = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "responses_total"),
+		prometheus.BuildFQName(namespaceBind, "", "responses_total"),
 		"Number of responses sent.",
 		[]string{"result"}, nil,
 	)
@@ -154,23 +153,23 @@ var (
 	}
 	serverMetricStats = map[string]*prometheus.Desc{
 		"QryDuplicate": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, "", "query_duplicates_total"),
+			prometheus.BuildFQName(namespaceBind, "", "query_duplicates_total"),
 			"Number of duplicated queries received.",
 			nil, nil,
 		),
 		"QryRecursion": prometheus.NewDesc(
-			prometheus.BuildFQName(namespace_bind, "", "query_recursions_total"),
+			prometheus.BuildFQName(namespaceBind, "", "query_recursions_total"),
 			"Number of queries causing recursion.",
 			nil, nil,
 		),
 	}
 	tasksRunning = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "tasks_running"),
+		prometheus.BuildFQName(namespaceBind, "", "tasks_running"),
 		"Number of running tasks.",
 		nil, nil,
 	)
 	workerThreads = prometheus.NewDesc(
-		prometheus.BuildFQName(namespace_bind, "", "worker_threads"),
+		prometheus.BuildFQName(namespaceBind, "", "worker_threads"),
 		"Total number of available worker threads.",
 		nil, nil,
 	)
@@ -317,7 +316,7 @@ func (c *taskCollector) Collect(ch chan<- prometheus.Metric) {
 	)
 }
 
-// Exporter collects Binds stats from the given server and exports them using
+// BindExporter Exporter collects Binds stats from the given server and exports them using
 // the prometheus metrics package.
 type BindExporter struct {
 	client     bind.Client
@@ -485,7 +484,7 @@ func (bi *BindExporter) NewBindHandler() func(w http.ResponseWriter, r *http.Req
 						return 0, fmt.Errorf("Can't parse pid file: %s", err)
 					}
 					return value, nil
-				}, namespace_bind)
+				}, namespaceBind)
 			err := registry.Register(procExporter)
 			if err != nil {
 				log.Errorln("Couldn't register collector:", err)
@@ -516,10 +515,12 @@ func init() {
 	registHandler(&bindExporter)
 }
 
+// GetName return the exporter name
 func (bi *BindExporter) GetName() string {
 	return "bind_exporter"
 }
 
+// ConfigReader read config file
 func (bi *BindExporter) ConfigReader(exporter *Exporter) error {
 	c, err := ReadBindExporterConfig(exporter.ConfigPath)
 	if err != nil {
@@ -529,6 +530,7 @@ func (bi *BindExporter) ConfigReader(exporter *Exporter) error {
 	return nil
 }
 
+// Handler add http handler
 func (bi *BindExporter) Handler(exporter *Exporter, m *mux.Router) error {
 	if c, ok := exporter.ConfigMap[exporter.Name]; ok {
 		bindHandler := bi.NewBindHandler()
