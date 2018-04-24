@@ -24,3 +24,8 @@ exporters:
     path: /snmp_exporter
     enable: true
     config_path: ./config/snmp_exporter.yml
+
+  - name: bind_exporter
+    path: /bind_exporter
+    enable: true
+    config_path: ./config/bind_exporter.yml

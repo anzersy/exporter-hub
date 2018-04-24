@@ -1,0 +1,5 @@
+bindURI: "http://localhost:8053/"
+bindTimeout: 10
+bindPidFile: ""
+bindVersion: "auto"
+showVersion: false
