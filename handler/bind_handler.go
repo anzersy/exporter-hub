@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
- 
+
 	"github.com/digitalocean/bind_exporter/bind"
 	"github.com/digitalocean/bind_exporter/bind/auto"
 	"github.com/digitalocean/bind_exporter/bind/v2"
@@ -26,13 +26,13 @@ import (
 
 const (
 	namespace_bind = "bind"
-	exporter  = "bind_exporter"
-	resolver  = "resolver"
+	exporter       = "bind_exporter"
+	resolver       = "resolver"
 )
 
 var (
 	bindExporter = BindExporter{}
-	groups = statisticGroups{bind.ServerStats, bind.ViewStats}
+	groups       = statisticGroups{bind.ServerStats, bind.ViewStats}
 
 	up = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace_bind, "", "up"),
@@ -441,8 +441,8 @@ func (s *statisticGroups) Set(value string) error {
 
 // BindExporterConfig for Port exporter config
 type BindExporterConfig struct {
-	BindURI 	string `yaml:"bindURI,omitempty" json:"bindURI"`
-	BindTimeout int `yaml:"bindTimeout,omitempty" json:"bindTimeout"`
+	BindURI     string `yaml:"bindURI,omitempty" json:"bindURI"`
+	BindTimeout int    `yaml:"bindTimeout,omitempty" json:"bindTimeout"`
 	BindPidFile string `yaml:"bindPidFile,omitempty" json:"bindPidFile"`
 	BindVersion string `yaml:"bindVersion,omitempty" json:"bindVersion"`
 	ShowVersion bool   `yaml:"showVersion,omitempty" json:"showVersion"`
@@ -494,7 +494,7 @@ func (bi *BindExporter) NewBindHandler() func(w http.ResponseWriter, r *http.Req
 				return
 			}
 		}
-		
+
 		gatherers := prometheus.Gatherers{
 			prometheus.DefaultGatherer,
 			registry,
