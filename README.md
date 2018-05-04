@@ -10,8 +10,8 @@ exporter-hub是一个包含多个exporter的集合程序，仅通过一个端口
 |process-exporter  | /process-exporter      |
 |blackbox-exporter | /blackbox-exporter     |
 |snmp-exporter     | /snmp-exporter         |
-
-
+|port-exporter     | /port-exporter         |
+|bind-exporter     | /bind-exporter         |
 
 
 #### docker镜像
